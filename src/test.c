@@ -14,12 +14,12 @@ static unsigned int flag;
 
 static void test_passed(const char *name){
     total += 1;
-    printf( GRN " Passed : %s : \xE2\x9C\x93" RESET, name);
+    printf( GRN "%s : \xE2\x9C\x93" RESET, name);
 }
 
 static void test_failed(const char *name){
     total += 1, failed += 1;
-    printf( RED " Failed : %s : \xE2\x9D\x8C" RESET, name);
+    printf( RED "%s : \xE2\x9D\x8C" RESET, name);
 }
 
 void test_init(void){

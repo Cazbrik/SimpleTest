@@ -1,10 +1,10 @@
 #ifndef TEST_H
 #define TEST_H
 
-#define BEFORE_SET
-#define AFTER_SET
+#define BEFORE_TEST
+#define AFTER_TEST
 
-#define TEST(name, expr) void name(){ BEFORE_SET; test_init(); expr; test_dispose(__func__); AFTER_SET; }
+#define TEST(name, expr) void name(){ BEFORE_TEST; test_init(); expr; test_dispose(__func__); AFTER_TEST; }
 
 void test_init(void);
 
