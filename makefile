@@ -12,7 +12,6 @@ LIB = libtest
 static : $(OBJ)
 	ar -r $(LIB).a $^
 	ranlib $(LIB).a
-	sudo mv $(LIB).a /usr/local/lib/
 
 dynamic : $(OBJ)
 	$(CC) -shared -o $(LIB).so $^
