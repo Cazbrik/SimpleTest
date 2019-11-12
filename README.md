@@ -9,7 +9,7 @@ Use the makefile provided in the projet to create the _.a_ or _.so_ file and inc
 ```sh
 git clone https://github.com/Cazbrik/SimpleTest.git test
 cd test
-make
+make static
 ```
 
 You may also have to include the header (_src/test.h_) file to avoid the warning during the compilation.
