@@ -45,14 +45,14 @@ void test_result(){
 void assert_int(const int expected, const int value){
     if(expected != value) {
         flag = 0;
-        printf( RED "Expected : %d got %d" RESET, expected, value);
+        printf( RED "Integer expected : %d got %d" RESET, expected, value);
     }
 }
 
 void assert_double(const double expected, const double value){
     if(expected != value){
         flag = 0;
-        printf( RED "Expected : %lf got %lf" RESET, expected, value);
+        printf( RED "Double expected : %lf got %lf" RESET, expected, value);
     }
 }
 
@@ -60,6 +60,6 @@ void assert_string(const char *expected, const char *value){
     int len_exp = strlen(expected), len_val = strlen(value);
     if(len_exp == len_val || strncmp(expected, value, len_exp)) {
         flag = 0;
-        printf( RED "Expected : %s got %s" RESET, expected, value);
+        printf( RED "String expected : %s got %s" RESET, expected, value);
     }
 }
