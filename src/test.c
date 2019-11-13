@@ -11,7 +11,7 @@
 #define CHECK   "\xE2\x9C\x93"
 #define CROSS   "\xE2\x9D\x8C"
 #define ARROW   "\xE2\x86\x92"
-#define LINE    "---------------------------------\n"
+#define LINE    "---------------------------------"
 
 static unsigned int total;
 static unsigned int failed;
@@ -37,7 +37,7 @@ void test_dispose(const char *name){
     } else {
         test_failed(name);
     }
-    printf( YEL LINE);
+    printf( YEL LINE RESET);
 }
 
 void test_result(){
