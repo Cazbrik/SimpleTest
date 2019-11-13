@@ -16,6 +16,8 @@ void assert_double(const double expected, const double value);
 
 void assert_string(const char *expected, const char *value);
 
+void assert_null(void *value);
+
 void test_result(void);
 
 #endif
