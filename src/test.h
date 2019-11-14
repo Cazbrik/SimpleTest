@@ -4,11 +4,11 @@
 #define BEFORE_TEST
 #define AFTER_TEST
 
-#define TEST(name, expr) void name(){ BEFORE_TEST; test_init(); expr; test_dispose(__func__); AFTER_TEST; }
+#define TEST(name, expr) void name(){ test_init(__func__); BEFORE_TEST; expr;AFTER_TEST; test_dispose();}
 
-void test_init(void);
+void test_init(const char *);
 
-void test_dispose(const char *);
+void test_dispose(void);
 
 void assert_int(const int expected, const int value);
 

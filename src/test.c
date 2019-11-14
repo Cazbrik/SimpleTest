@@ -1,86 +1,142 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include <stdarg.h>
 
 #include "test.h"
 
 #define RED     "\x1B[31m"
 #define GRN     "\x1B[32m"
 #define YEL     "\x1B[33m"
-#define RESET   "\x1B[0m\n"
+#define BLU     "\x1B[34m"
+#define RES     "\x1B[0m"
 
 #define CHECK   "\xE2\x9C\x93"
-#define CROSS   "\xE2\x9D\x8C"
+#define CROSS   "x"
 #define ARROW   "\xE2\x86\x92"
-#define LINE    "---------------------------------"
+#define LINE    "\n---------------------------------------------\n"
 
-static unsigned int total;
-static unsigned int failed;
-static unsigned int flag;
+/* Utils for test operations */
 
-static void test_passed(const char *name){
-    total += 1;
-    printf( GRN "\t%s : " CHECK RESET, name);
+struct error {
+    char *msg;
+    struct error *next;
+};
+
+static void push_front(struct error **head, char *msg) {
+    struct error *node = malloc(sizeof(struct error));
+
+    int length = strlen(msg);
+    node->msg = calloc(length + 1, sizeof(char));
+    if(!node->msg) return;      /* Todo : maybe should be handled in a better way */
+    memset(node->msg, 0, length + 1);
+    strncpy(node->msg, msg, length);
+
+    node->next = *head;
+    *head = node;
 }
 
-static void test_failed(const char *name){
-    total += 1, failed += 1;
-    printf( RED "\t%s : " CROSS RESET, name);
+static void delete(struct error **head)  {  
+    
+    if(!head) return;
+
+    struct error *next;
+    while (*head){  
+        next = (*head)->next;
+        if((*head)->msg) printf( RED "%s" RES, (*head)->msg);
+        free(*head);  
+        (*head) = next;  
+    }  
+      
+    *head = NULL;  
+}  
+
+/* test operation */
+
+static struct error *errors;
+static unsigned int flag, test, test_f, assert, assert_f;
+
+static void assert_pass(void){
+    assert++;
+    printf(GRN CHECK " " RES);
 }
 
-void test_init(void){
+static void assert_fail(const char *format, ...){
+
+    char *null = NULL;
+
+    va_list vargs;
+    va_start(vargs, format);
+    int size = vsnprintf(null, 0, format, vargs);
+    va_end(vargs);
+
+    char msg[size];
+    memset(msg, 0, size);
+
+    va_start(vargs, format);
+    vsnprintf(msg, size + 1, format, vargs);
+    va_end(vargs);
+
+    assert++;
+    assert_f++;
+    flag = 0;
+    push_front(&errors, msg);
+    printf(RED CROSS " " RES);
+
+}
+
+void test_init(const char *name){
     flag = 1;
+    delete(&errors);
+    printf("\n" BLU "%s : " RES, name);
 }
 
-void test_dispose(const char *name){
-    if(flag){
-        test_passed(name);
-    } else {
-        test_failed(name);
-    }
-    printf( YEL LINE RESET);
-}
-
-void test_result(){
-    if(total){
-        printf( YEL "--> %d on %d test passed : %d%%" RESET, (total -failed), total, ((total - failed) * 100 / total));
-    } else {
-        printf( YEL "No test created" RESET);
-    }
+void test_dispose(void){
+    test++;
+    if(!flag) test_f++;
+    printf("\n");
+    delete(&errors);
+    printf(YEL LINE RES);
 }
 
 void assert_int(const int expected, const int value){
-    if(expected != value) {
-        flag = 0;
-        printf( RED ARROW " Int expected : %d got %d" RESET, expected, value);
+    if(expected == value) {
+        assert_pass();
     } else {
-        printf( GRN ARROW " Int assertion passed" RESET);
+        assert_fail("\n" RED "Int expected : %d, value received : %d" RES "\n", expected, value);
     }
 }
 
 void assert_double(const double expected, const double value){
-    if(expected != value){
-        flag = 0;
-        printf( RED ARROW " Dou expected : %lf got %lf" RESET, expected, value);
+    if(expected == value) {
+        assert_pass();
     } else {
-        printf( GRN ARROW " Dou assertion passed" RESET);
+        assert_fail("\n" RED ARROW "Dou expected : %lf, value received : %lf" RES "\n", expected, value);
     }
 }
 
 void assert_string(const char *expected, const char *value){
     int len_exp = strlen(expected), len_val = strlen(value);
-    if(len_exp != len_val || strncmp(expected, value, len_exp)) {
-        flag = 0;
-        printf( RED ARROW " Str expected : %s got %s" RESET, expected, value);
+    if(len_exp == len_val && !strncmp(expected, value, len_exp)) {
+        assert_pass();
     } else {
-        printf( GRN ARROW " Str assertion passed" RESET);
+        assert_fail("\n" RED ARROW " Str expected : %s got %s" RES "\n", expected, value);
     }
 }
 
 void assert_null(void *value){
-    if(value){
-        flag = 0;
-        printf( RED ARROW " Nil expected but got %p" RESET, value);
+    if(!value){
+        assert_pass();
     } else {
-        printf( GRN ARROW " Nil assertion passed" RESET);
+        assert_fail("\n" RED ARROW " Nil expected but got %p" RES "\n", value);
+    }
+}
+
+void test_result(void){
+    if(test){
+        printf(YEL "--> %d on %d test passed : %d%%" RES "\n", (test - test_f), test, ((test - test_f) * 100 / test));
+        printf(YEL "--> %d on %d assertion passed : %d%%" RES "\n", (assert - assert_f), assert, ((assert - assert_f) * 100 / assert));
+    } else {
+        printf(YEL "No test created" RES "\n");
     }
 }
