@@ -4,7 +4,7 @@ CFLAGS = -W -Wall -std=c17 -pedantic
 OUT_DIR = build
 
 SRC_DIR = src
-SRC = $(shell find $(SRC_DIR) -name '*.c' -print)
+SRC = ./src/test.c
 OBJ = $(addprefix $(OUT_DIR)/,$(SRC:.c=.o))
 
 LIB = libtest
